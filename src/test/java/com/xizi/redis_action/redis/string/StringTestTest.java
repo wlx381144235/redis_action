@@ -77,4 +77,43 @@ public class StringTestTest {
         redisTemplate.opsForValue().multiSet(map);
     }
     
+    @Test
+    public void testList(){
+//        从左边插入数据 如果key不存在，则创建key的list
+        redisTemplate.opsForList().leftPush("list","1");
+        redisTemplate.opsForList().leftPush("list","2");
+        redisTemplate.opsForList().leftPush("list","3");
+        
+//        从右边插入数据，如果key不存在，则创建key的list
+        redisTemplate.opsForList().rightPush("list","3");
+        redisTemplate.opsForList().rightPush("list","2");
+        redisTemplate.opsForList().rightPush("list","1");
+        
+//        设置list中的下标为2的数据为“100”
+        redisTemplate.opsForList().set("list",2,"100");
+        
+//        获取list中下标为2的数据
+        System.out.println(redisTemplate.opsForList().index("list", 2));
+        
+//        从左边删除并返回数据
+        System.out.println(redisTemplate.opsForList().leftPop("list"));
+        
+//        在规定时间内从左边删除并返回数据，时间结束返回null
+        System.out.println(redisTemplate.opsForList().leftPop("list",Duration.ofSeconds(10)));
+        
+//        从左边插入数据，在“1”之前插入“100”
+        redisTemplate.opsForList().leftPush("list","1","100");
+        
+//        从左边插入数据，如果key存在的话  不存在不执行
+        redisTemplate.opsForList().leftPushIfPresent("list1","1");
+        
+//        获取key中的satrt-end的数据
+//        redisTemplate.opsForList().range("list",0,2).forEach(System.out::println);
+
+//        移除“2”前面的1哥数据（包括2）
+        redisTemplate.opsForList().remove("list",1,"2");
+        
+//      将list修建至start-end的长度
+        redisTemplate.opsForList().trim("list",0,3);
+    }
 }
