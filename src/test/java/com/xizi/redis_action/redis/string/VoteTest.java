@@ -36,15 +36,19 @@ public class VoteTest {
     
     private static final String ARTICLE_PREFIX = "article:%s";
     
+    public static String getFullKey(String prefix,Article article){
+        return String.format(prefix,article.getArticleId());
+    }
+    
     public void pushArticle(Article article){
-        redisTemplate.opsForSet().add(String.format(VOTED_PREFIX, article.getArticleId()),article.getAuthor());
-        redisTemplate.expire(String.format(VOTED_PREFIX, article.getArticleId()),Duration.ofSeconds(WEEK_TO_SECOND));
+        redisTemplate.opsForSet().add(getFullKey(VOTED_PREFIX,article),article.getAuthor());
+        redisTemplate.expire(getFullKey(VOTED_PREFIX,article),Duration.ofSeconds(WEEK_TO_SECOND));
         
         Map<String,String> map = new HashMap<>();
         map.put("articleId",article.getArticleId());
         map.put("autor",article.getAuthor());
         map.put("voted","0");
-        redisTemplate.opsForHash().putAll(String.format(ARTICLE_PREFIX,article.getArticleId()),map);
+        redisTemplate.opsForHash().putAll(getFullKey(ARTICLE_PREFIX,article),map);
         
         long now = System.currentTimeMillis() / 1000;
         redisTemplate.opsForZSet().add("score",article.getArticleId(),now + VOTE_SCORE);
@@ -58,9 +62,9 @@ public class VoteTest {
         if(redisTemplate.opsForZSet().score("time",article.getArticleId()) < offsetTime){
             return;
         }
-        if(redisTemplate.opsForSet().add(String.format(VOTED_PREFIX, article.getArticleId()),user.getUserId()) == 1){
+        if(redisTemplate.opsForSet().add(getFullKey(VOTED_PREFIX,article),user.getUserId()) == 1){
             redisTemplate.opsForZSet().incrementScore("score", article.getArticleId(),VOTE_SCORE);
-            redisTemplate.opsForHash().increment(String.format(ARTICLE_PREFIX,article.getArticleId()),"voted",1);
+            redisTemplate.opsForHash().increment(getFullKey(ARTICLE_PREFIX,article),"voted",1);
         }
     }
     
