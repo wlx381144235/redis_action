@@ -1,10 +1,12 @@
 package com.xizi.redis_action.redis.string;
 
+import com.xizi.redis_action.pojo.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
@@ -115,5 +117,47 @@ public class StringTestTest {
         
 //      将list修建至start-end的长度
         redisTemplate.opsForList().trim("list",0,3);
+    }
+    
+    @Test
+    public void testHash(){
+//        向“hash”这个hash中存入数据
+        redisTemplate.opsForHash().put("hash","age","10");
+        
+//        获取hash中key为"age"的值
+        System.out.println(redisTemplate.opsForHash().get("hash", "age"));
+        
+//      删除
+        redisTemplate.opsForHash().delete("hash","age");
+        
+//        获取hash中的键值对集合
+        System.out.println(redisTemplate.opsForHash().entries("hash"));
+        
+//      判断hash中是否包含“name”这个key
+        System.out.println(redisTemplate.opsForHash().hasKey("hash","name"));
+        
+//      对hash中某个key的value进行增加操作
+        redisTemplate.opsForHash().increment("hash","age",1);
+        
+//      同上 增加的double值
+        redisTemplate.opsForHash().increment("hash","age",Double.parseDouble("1.45"));
+        
+//        获取hash中的所有key集合
+        System.out.println(redisTemplate.opsForHash().keys("hash"));
+        
+//        获取hash中某个key的value的长度
+        System.out.println(redisTemplate.opsForHash().lengthOfValue("hash", "name"));
+        
+//      批量获取
+        System.out.println(redisTemplate.opsForHash().multiGet("hash", Arrays.asList("name", "age")));
+        
+//      获取hash中的所有value集合
+        System.out.println(redisTemplate.opsForHash().values("hash"));
+        
+//      获取hash中的键值对数量
+        System.out.println(redisTemplate.opsForHash().size("hash"));
+        
+//      用来代替keys命令，虽然总体时间增加，但是不会阻塞redis。支持正则（match key的正则表达式） 分批次（count 每次扫描的记录数）
+        System.out.println(redisTemplate.opsForHash().scan("hash", ScanOptions.scanOptions().count(1).match("*").build()).next());
     }
 }
