@@ -5,16 +5,15 @@ import lombok.Data;
 
 /**
  * @author 夜尽
- * @date 2020/10/12 15:13
+ * @date 2020/10/13 14:33
  */
 
 @Data
 @AllArgsConstructor
-public class User {
+public class Article {
     
-    private String userId;
+    private String articleId;
     
-    private String name;
+    private String author;
     
 }
-
