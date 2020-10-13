@@ -160,4 +160,49 @@ public class StringTestTest {
 //      用来代替keys命令，虽然总体时间增加，但是不会阻塞redis。支持正则（match key的正则表达式） 分批次（count 每次扫描的记录数）
         System.out.println(redisTemplate.opsForHash().scan("hash", ScanOptions.scanOptions().count(1).match("*").build()).next());
     }
+    
+    
+    @Test
+    public void testset(){
+        redisTemplate.opsForSet().add("myset","a","b","c");
+
+//        返回第一个set和其他set的差集（即myset2有而myset没有的集合）
+        System.out.println(redisTemplate.opsForSet().difference(Arrays.asList("myset2", "myset")));
+
+//        将myset和myset2的差集保存在一个新的set myset3中。
+        redisTemplate.opsForSet().differenceAndStore(Arrays.asList("myset","myset2"),"myset3");
+
+//        在myset中随机获取2个元素返回为集合
+        System.out.println(redisTemplate.opsForSet().distinctRandomMembers("myset", 2));
+
+//        返回myset和myset3的交集
+        System.out.println(redisTemplate.opsForSet().intersect(Arrays.asList("myset", "myset3")));
+
+//        判断某元素是否在myset中
+        System.out.println(redisTemplate.opsForSet().isMember("myset", "a"));
+
+//        获取myset中的所有元素
+        System.out.println(redisTemplate.opsForSet().members("myset"));
+
+//        将myset中的“a”移到myset2
+        redisTemplate.opsForSet().move("myset","a","myset2");
+
+//        随机删除myset2中的一个元素并返回
+        redisTemplate.opsForSet().pop("myset2");
+    
+//        随机删除myset2中的2个元素并返回list
+        redisTemplate.opsForSet().pop("myset2",2);
+
+//        随机获取myset2中的一个元素 randomMembers函数就是返回多个了
+        redisTemplate.opsForSet().randomMember("myset2");
+
+//        删除myset2中的指定元素
+        redisTemplate.opsForSet().remove("myset2","a");
+
+//        返回两个set的并集。
+        System.out.println(redisTemplate.opsForSet().union("myset", "myset2"));
+
+//        两个set并集并保存。
+        redisTemplate.opsForSet().unionAndStore("myset","myset2","myset4");
+    }
 }
