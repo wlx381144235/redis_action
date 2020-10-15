@@ -5,14 +5,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.connection.RedisZSetCommands;
+import org.springframework.data.redis.core.DefaultTypedTuple;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 /**
  *@author 夜尽
@@ -204,5 +205,75 @@ public class StringTestTest {
 
 //        两个set并集并保存。
         redisTemplate.opsForSet().unionAndStore("myset","myset2","myset4");
+    }
+    
+    
+    @Test
+    public void testZset(){
+    
+//        最简单的新增
+        redisTemplate.opsForZSet().add("myzset","first",100.00);
+        redisTemplate.opsForZSet().add("myzset","second",99.5);
+
+//        批量新增，但是使用的是一个TypedTuple类型的对象保存值和分数
+        Set<ZSetOperations.TypedTuple<String>> set = new HashSet<>();
+        set.add(new DefaultTypedTuple<>("fourth",83.2));
+        set.add(new DefaultTypedTuple<>("third",92.1));
+        redisTemplate.opsForZSet().add("myzset",set);
+
+//        获取在min和max分数之间的元素的个数
+        System.out.println(redisTemplate.opsForZSet().count("myzset", 90.0, 99.5));
+
+//        给myzset中的某个元素增加分值
+        redisTemplate.opsForZSet().incrementScore("myzset","first",1.21);
+
+//        将myzset和myzset2中的相同的value，socre相加，并保存在新的myzset3中。
+        redisTemplate.opsForZSet().intersectAndStore("myzset","myzset2","myzset3");
+        redisTemplate.opsForZSet().intersectAndStore("myzset",Arrays.asList("myzset2","myzset3"),"final");
+
+//        这个方法会将几个zset的值取交集然后存储他们的Aggregate类型（max 最大值；min 最小值；sum 求和）
+        redisTemplate.opsForZSet().intersectAndStore("myzset",Arrays.asList("myzset2","myzset3"),"final", RedisZSetCommands.Aggregate.SUM);
+
+//        这个函数多了一个权重，也就是在上个函数的结果上乘以权重，这个权重的个数要和zset个数保持一致。
+        RedisZSetCommands.Weights weight = RedisZSetCommands.Weights.of(10.00,100.00,1000.00);
+        redisTemplate.opsForZSet().intersectAndStore("myzset",Arrays.asList("myzset2","myzset3"),"final", RedisZSetCommands.Aggregate.SUM,weight);
+
+//        返回myzset中排序为2-3（包含）的元素集合。
+        System.out.println(redisTemplate.opsForZSet().range("myzset", 1, 2));
+
+//        当zset中分数相同时，值按照字典顺序排序，用于获取某些大于等于“gg”的值
+        RedisZSetCommands.Range range = new RedisZSetCommands.Range();
+        range.gte("gg");
+        System.out.println(redisTemplate.opsForZSet().rangeByLex("myzset", range));
+    
+
+//        分数相同时，获取某些大于“gg”的值 并进行分页，从offset开始的count个元素。
+        RedisZSetCommands.Range range2 = new RedisZSetCommands.Range();
+        range2.gte("gg");
+        RedisZSetCommands.Limit limit = new RedisZSetCommands.Limit();
+        limit.offset(1).count(1);
+        System.out.println(redisTemplate.opsForZSet().rangeByLex("myzset", range2, limit));
+
+//        靠分值范围来取元素，下面的是增加了分页
+        redisTemplate.opsForZSet().rangeByScore("myzset",100,120);
+        redisTemplate.opsForZSet().rangeByScore("myzset",100,120,5,2);
+
+//        获取分数段范围内的Set<TypedTuple<V>> 下面的就是加了分页
+        System.out.println(redisTemplate.opsForZSet().rangeByScoreWithScores("myzset", 50, 100));
+        System.out.println(redisTemplate.opsForZSet().rangeByScoreWithScores("myzset", 50, 100,2,1));
+
+//        返回某个值在zset中的排序index   第二个是反向排序的index
+        System.out.println(redisTemplate.opsForZSet().rank("myzset", "second"));
+        redisTemplate.opsForZSet().reverseRank("myzset","second");
+        
+//        删除zset中的某个元素 第二个是排序顺序删除 第三个是按分数范围删除
+        redisTemplate.opsForZSet().remove("myzsst","first");
+        redisTemplate.opsForZSet().removeRange("myzset",1,2);
+        redisTemplate.opsForZSet().removeRangeByScore("myzset",100,120);
+
+//        将zset中的排序顺序颠倒并返回1-3 index的数据 第二个是反序返回100-120分之间的数据  第三个是做了分页
+        System.out.println(redisTemplate.opsForZSet().reverseRange("myzset", 1, 3));
+        redisTemplate.opsForZSet().reverseRangeByScore("myzset",100,120);
+        redisTemplate.opsForZSet().reverseRangeByScore("myzset",100,120,1,3);
     }
 }
