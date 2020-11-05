@@ -12,17 +12,19 @@ spring:
       datasource:
         my:
           driver-class-name: com.mysql.cj.jdbc.Driver
-          # username: ywgl
-          # password: J2Rv%T
           username: root
           password: 123456
           url: jdbc:mysql://${service.ip}:3306/test?characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false&nullCatalogMeansCurrent=true
-        #url: jdbc:mysql://10.20.5.56:3306/fgjc?characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false&nullCatalogMeansCurrent=true
         post:
           driver-class-name: org.postgresql.Driver
           username: postgres
           password: 123456
           url: jdbc:postgresql://127.0.0.1:5432/test?characterEncoding=utf-8
+        postinside: # 外网
+          driver-class-name: org.postgresql.Driver
+          username: postgres
+          password: 123456
+          url: jdbc:postgresql://127.0.0.1:5432/skylar?characterEncoding=utf-8
       initial-size: 10 # 以下是连接池配置
       max-active: 100
       min-idle: 10

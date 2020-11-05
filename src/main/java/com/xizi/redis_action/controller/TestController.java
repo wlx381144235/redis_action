@@ -1,13 +1,13 @@
 package com.xizi.redis_action.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xizi.redis_action.pojo.ClientSoftware;
+import com.xizi.redis_action.pojo.ClientSoftwareInside;
+import com.xizi.redis_action.service.MyClientSoftInsideService;
 import com.xizi.redis_action.service.MyClientSoftService;
+import com.xizi.redis_action.service.PostClientInsideSoftService;
 import com.xizi.redis_action.service.PostClientSoftService;
 import com.xizi.redis_action.util.ListUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,40 +30,26 @@ public class TestController {
     private PostClientSoftService postClientSoftService;
     
     @Resource
+    private PostClientInsideSoftService postClientInsideSoftService;
+    
+    @Resource
     private MyClientSoftService myClientSoftService;
     
     @Resource
-    private RedisTemplate<String,List<ClientSoftware>> redisTemplate;
-    
-        
-    @GetMapping("/getall")
-    public String getAll(){
-        int count = postClientSoftService.count() + 1000;
-        int pageNum = -1;
-        IPage<ClientSoftware> page = new Page<>();
-        for(int i = 0; i < count; i = i +1000) {
-            page.setPages(pageNum + 1).setSize(1000);
-            postClientSoftService.restore(page);
-        }
-        return "写入redis完成";
-    }
-    
-    @GetMapping("/getmy")
-    public String getmy(){
-        long size = redisTemplate.opsForList().size("clientSoft");
-        for(int i = 0; i < size; i++) {
-            List<ClientSoftware> list = redisTemplate.opsForList().index("clientSoft",i);
-            myClientSoftService.restore(list);
-        }
-        return "提交成功";
-    }
+    private MyClientSoftInsideService myClientSoftInsideService;
     
     @GetMapping("/restore")
     public String restore() throws ExecutionException, InterruptedException {
         List<ClientSoftware> clientSoftwareList = postClientSoftService.list();
-        Map<String,List<ClientSoftware>> map = ListUtil.groupList(clientSoftwareList);
+        List<ClientSoftware> clientSoftwareInsideList = postClientInsideSoftService.list();
+        ListUtil<ClientSoftware,ClientSoftwareInside> util = new ListUtil<>();
+        Map<String,List<ClientSoftware>> map = util.groupList(clientSoftwareList);
+        Map<String,List<ClientSoftwareInside>> mapInside = util.insideGroupList(clientSoftwareInsideList,ClientSoftwareInside.class);
         for (List<ClientSoftware> list :map.values()){
             myClientSoftService.restoreFinal(list);
+        }
+        for (List<ClientSoftwareInside> list :mapInside.values()){
+            myClientSoftInsideService.restoreFinal(list);
         }
         return "success";
     }

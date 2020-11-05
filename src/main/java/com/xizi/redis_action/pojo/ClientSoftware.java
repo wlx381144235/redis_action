@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class ClientSoftware implements Serializable {
 
     @TableId
-    private int id;
+    private Long id;
     
     private String mid;
     
@@ -36,11 +36,11 @@ public class ClientSoftware implements Serializable {
     
     private String serialNumber;
     
-    private int sid;
+    private Long sid;
     
-    private int softId;
+    private Long softId;
     
-    private int softFrom;
+    private Long softFrom;
     
     private String softmgrVersion;
 
