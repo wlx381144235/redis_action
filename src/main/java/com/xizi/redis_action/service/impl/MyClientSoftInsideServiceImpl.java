@@ -1,7 +1,7 @@
 package com.xizi.redis_action.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xizi.redis_action.mapper.mysql.MysqlClientInsideMapper;
+import com.xizi.redis_action.mapper.mysql.MysqlClientSoftInsideMapper;
 import com.xizi.redis_action.pojo.ClientSoftwareInside;
 import com.xizi.redis_action.service.MyClientSoftInsideService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class MyClientSoftInsideServiceImpl extends ServiceImpl<MysqlClientInsideMapper, ClientSoftwareInside> implements MyClientSoftInsideService {
+public class MyClientSoftInsideServiceImpl extends ServiceImpl<MysqlClientSoftInsideMapper, ClientSoftwareInside> implements MyClientSoftInsideService {
     
     @Override
     @Async("taskExecutor")

@@ -1,4 +1,4 @@
-package com.xizi.redis_action.mapper.mysql;
+package com.xizi.redis_action.mapper.post;
 
 
 import com.baomidou.dynamic.datasource.annotation.DS;
@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 
 @Mapper
-@DS("my")
-public interface MysqlClientMapper extends BaseMapper<ClientSoftware> {
+@DS("postinside")
+public interface PostClientSoftInsideMapper extends BaseMapper<ClientSoftware> {
 
 }
