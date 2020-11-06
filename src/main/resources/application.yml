@@ -14,7 +14,7 @@ spring:
           driver-class-name: com.mysql.cj.jdbc.Driver
           username: root
           password: 123456
-          url: jdbc:mysql://${service.ip}:3306/test?characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false&nullCatalogMeansCurrent=true
+          url: jdbc:mysql://${service.ip}:3306/test?zeroDateTimeBehavior=CONVERT_TO_NULL&&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false&nullCatalogMeansCurrent=true
         post:
           driver-class-name: org.postgresql.Driver
           username: postgres
