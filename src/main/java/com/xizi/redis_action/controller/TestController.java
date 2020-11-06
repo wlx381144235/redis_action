@@ -1,9 +1,6 @@
 package com.xizi.redis_action.controller;
 
-import com.xizi.redis_action.pojo.Client;
-import com.xizi.redis_action.pojo.ClientInside;
-import com.xizi.redis_action.pojo.ClientSoftware;
-import com.xizi.redis_action.pojo.ClientSoftwareInside;
+import com.xizi.redis_action.pojo.*;
 import com.xizi.redis_action.service.*;
 import com.xizi.redis_action.util.ListUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +46,18 @@ public class TestController {
     @Resource
     private MyClientInsideService myClientInsideService;
     
+    @Resource
+    private PostClientAllService postClientAllService;
+    
+    @Resource
+    private PostClientAllInsideService postClientAllInsideService;
+    
+    @Resource
+    private MyClientAllService myClientAllService;
+    
+    @Resource
+    private MyClientAllInsideService myClientAllInsideService;
+    
     @GetMapping("/restore")
     public String restore() throws ExecutionException, InterruptedException {
         List<ClientSoftware> clientSoftwareList = postClientSoftService.list();
@@ -77,6 +86,22 @@ public class TestController {
         }
         for (List<ClientInside> list :mapInside.values()){
             myClientInsideService.restoreFinal(list);
+        }
+        return "success";
+    }
+    
+    @GetMapping("/restore3")
+    public String restore3() throws ExecutionException, InterruptedException {
+        List<ClientAll> clientAllList = postClientAllService.list();
+        List<ClientAll> clientAllInsideList = postClientAllInsideService.list();
+        ListUtil<ClientAll, ClientAllInside> util = new ListUtil<>();
+        Map<String,List<ClientAll>> map = util.groupList(clientAllList);
+        Map<String,List<ClientAllInside>> mapInside = util.insideGroupList(clientAllInsideList,ClientAllInside.class);
+        for (List<ClientAll> list :map.values()){
+            myClientAllService.restoreFinal(list);
+        }
+        for (List<ClientAllInside> list :mapInside.values()){
+            myClientAllInsideService.restoreFinal(list);
         }
         return "success";
     }
