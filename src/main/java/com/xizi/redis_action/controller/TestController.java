@@ -70,6 +70,18 @@ public class TestController {
     @Resource
     private MyClientOsInsideService myClientOsInsideService;
     
+    @Resource
+    private PostClientNicService postClientNicService;
+    
+    @Resource
+    private PostClientNicInsideService postClientNicInsideService;
+    
+    @Resource
+    private MyClientNicService myClientNicService;
+    
+    @Resource
+    private MyClientNicInsideService myClientNicInsideService;
+    
     @GetMapping("/restore")
     public String restore() throws ExecutionException, InterruptedException {
         List<ClientSoftware> clientSoftwareList = postClientSoftService.list();
@@ -130,6 +142,22 @@ public class TestController {
         }
         for (List<ClientOsInside> list :mapInside.values()){
             myClientOsInsideService.restoreFinal(list);
+        }
+        return "success";
+    }
+    
+    @GetMapping("/restore5")
+    public String restore5() throws ExecutionException, InterruptedException {
+        List<ClientNic> clientNicList = postClientNicService.list();
+        List<ClientNic> clientNicInsideList = postClientNicInsideService.list();
+        ListUtil<ClientNic, ClientNicInside> util = new ListUtil<>();
+        Map<String,List<ClientNic>> map = util.groupList(clientNicList);
+        Map<String,List<ClientNicInside>> mapInside = util.insideGroupList(clientNicInsideList,ClientNicInside.class);
+        for (List<ClientNic> list :map.values()){
+            myClientNicService.restoreFinal(list);
+        }
+        for (List<ClientNicInside> list :mapInside.values()){
+            myClientNicInsideService.restoreFinal(list);
         }
         return "success";
     }
