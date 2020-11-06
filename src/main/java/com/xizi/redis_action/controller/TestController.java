@@ -1,11 +1,10 @@
 package com.xizi.redis_action.controller;
 
+import com.xizi.redis_action.pojo.Client;
+import com.xizi.redis_action.pojo.ClientInside;
 import com.xizi.redis_action.pojo.ClientSoftware;
 import com.xizi.redis_action.pojo.ClientSoftwareInside;
-import com.xizi.redis_action.service.MyClientSoftInsideService;
-import com.xizi.redis_action.service.MyClientSoftService;
-import com.xizi.redis_action.service.PostClientInsideSoftService;
-import com.xizi.redis_action.service.PostClientSoftService;
+import com.xizi.redis_action.service.*;
 import com.xizi.redis_action.util.ListUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +37,18 @@ public class TestController {
     @Resource
     private MyClientSoftInsideService myClientSoftInsideService;
     
+    @Resource
+    private PostClientService postClientService;
+    
+    @Resource
+    private PostClientInsideService postClientInsideService;
+    
+    @Resource
+    private MyClientService myClientService;
+    
+    @Resource
+    private MyClientInsideService myClientInsideService;
+    
     @GetMapping("/restore")
     public String restore() throws ExecutionException, InterruptedException {
         List<ClientSoftware> clientSoftwareList = postClientSoftService.list();
@@ -50,6 +61,22 @@ public class TestController {
         }
         for (List<ClientSoftwareInside> list :mapInside.values()){
             myClientSoftInsideService.restoreFinal(list);
+        }
+        return "success";
+    }
+    
+    @GetMapping("/restore2")
+    public String restore2() throws ExecutionException, InterruptedException {
+        List<Client> clientList = postClientService.list();
+        List<Client> clientInsideList = postClientInsideService.list();
+        ListUtil<Client, ClientInside> util = new ListUtil<>();
+        Map<String,List<Client>> map = util.groupList(clientList);
+        Map<String,List<ClientInside>> mapInside = util.insideGroupList(clientInsideList,ClientInside.class);
+        for (List<Client> list :map.values()){
+            myClientService.restoreFinal(list);
+        }
+        for (List<ClientInside> list :mapInside.values()){
+            myClientInsideService.restoreFinal(list);
         }
         return "success";
     }
