@@ -142,6 +142,18 @@ public class TestController {
     @Resource
     private MyClientHardwareHarddiskInsideService myClientHardwareHarddiskInsideService;
     
+    @Resource
+    private PostClientHardwareMainboardService postClientHardwareMainboardService;
+    
+    @Resource
+    private PostClientHardwareMainboardInsideService postClientHardwareMainboardInsideService;
+    
+    @Resource
+    private MyClientHardwareMainboardService myClientHardwareMainboardService;
+    
+    @Resource
+    private MyClientHardwareMainboardInsideService myClientHardwareMainboardInsideService;
+    
     @GetMapping("/restore")
     public String restore() throws ExecutionException, InterruptedException {
         List<ClientSoftware> clientSoftwareList = postClientSoftService.list();
@@ -303,4 +315,19 @@ public class TestController {
         return "success";
     }
     
+    @GetMapping("/restore11")
+    public String restore11() throws ExecutionException, InterruptedException {
+        List<ClientHardwareMainboard> clientHardwareMainboardList = postClientHardwareMainboardService.list();
+        List<ClientHardwareMainboard> clientHardwareMainboardInsideList = postClientHardwareMainboardInsideService.list();
+        ListUtil<ClientHardwareMainboard, ClientHardwareMainboardInside> util = new ListUtil<>();
+        Map<String,List<ClientHardwareMainboard>> map = util.groupList(clientHardwareMainboardList);
+        Map<String,List<ClientHardwareMainboardInside>> mapInside = util.insideGroupList(clientHardwareMainboardInsideList, ClientHardwareMainboardInside.class);
+        for (List<ClientHardwareMainboard> list :map.values()){
+            myClientHardwareMainboardService.restoreFinal(list);
+        }
+        for (List<ClientHardwareMainboardInside> list :mapInside.values()){
+            myClientHardwareMainboardInsideService.restoreFinal(list);
+        }
+        return "success";
+    }
 }
