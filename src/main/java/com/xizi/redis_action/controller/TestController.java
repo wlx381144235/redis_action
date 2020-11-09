@@ -130,6 +130,18 @@ public class TestController {
     @Resource
     private MyClientHardwareDisplaycardInsideService myClientHardwareDisplaycardInsideService;
     
+    @Resource
+    private PostClientHardwareHarddiskService postClientHardwareHarddiskService;
+    
+    @Resource
+    private PostClientHardwareHarddiskInsideService postClientHardwareHarddiskInsideService;
+    
+    @Resource
+    private MyClientHardwareHarddiskService myClientHardwareHarddiskService;
+    
+    @Resource
+    private MyClientHardwareHarddiskInsideService myClientHardwareHarddiskInsideService;
+    
     @GetMapping("/restore")
     public String restore() throws ExecutionException, InterruptedException {
         List<ClientSoftware> clientSoftwareList = postClientSoftService.list();
@@ -271,6 +283,22 @@ public class TestController {
         }
         for (List<ClientHardwareDisplaycardInside> list :mapInside.values()){
             myClientHardwareDisplaycardInsideService.restoreFinal(list);
+        }
+        return "success";
+    }
+    
+    @GetMapping("/restore10")
+    public String restore10() throws ExecutionException, InterruptedException {
+        List<ClientHardwareHarddisk> clientHardwareHarddiskList = postClientHardwareHarddiskService.list();
+        List<ClientHardwareHarddisk> clientHardwareHarddiskInsideList = postClientHardwareHarddiskInsideService.list();
+        ListUtil<ClientHardwareHarddisk, ClientHardwareHarddiskInside> util = new ListUtil<>();
+        Map<String,List<ClientHardwareHarddisk>> map = util.groupList(clientHardwareHarddiskList);
+        Map<String,List<ClientHardwareHarddiskInside>> mapInside = util.insideGroupList(clientHardwareHarddiskInsideList, ClientHardwareHarddiskInside.class);
+        for (List<ClientHardwareHarddisk> list :map.values()){
+            myClientHardwareHarddiskService.restoreFinal(list);
+        }
+        for (List<ClientHardwareHarddiskInside> list :mapInside.values()){
+            myClientHardwareHarddiskInsideService.restoreFinal(list);
         }
         return "success";
     }
