@@ -82,6 +82,18 @@ public class TestController {
     @Resource
     private MyClientNicInsideService myClientNicInsideService;
     
+    @Resource
+    private PostClientNetworkAdapterService postClientNetworkAdapterService;
+    
+    @Resource
+    private PostClientNetworkAdapterInsideService postClientNetworkAdapterInsideService;
+    
+    @Resource
+    private MyClientNetworkAdapterService myClientNetworkAdapterService;
+    
+    @Resource
+    private MyClientNetworkAdapterInsideService myClientNetworkAdapterInsideService;
+    
     @GetMapping("/restore")
     public String restore() throws ExecutionException, InterruptedException {
         List<ClientSoftware> clientSoftwareList = postClientSoftService.list();
@@ -158,6 +170,22 @@ public class TestController {
         }
         for (List<ClientNicInside> list :mapInside.values()){
             myClientNicInsideService.restoreFinal(list);
+        }
+        return "success";
+    }
+    
+    @GetMapping("/restore6")
+    public String restore6() throws ExecutionException, InterruptedException {
+        List<ClientNetworkAdapters> clientNetworkAdaptersList = postClientNetworkAdapterService.list();
+        List<ClientNetworkAdapters> clientNetworkAdaptersInsideList = postClientNetworkAdapterInsideService.list();
+        ListUtil<ClientNetworkAdapters, ClientNetworkAdaptersInside> util = new ListUtil<>();
+        Map<String,List<ClientNetworkAdapters>> map = util.groupList(clientNetworkAdaptersList);
+        Map<String,List<ClientNetworkAdaptersInside>> mapInside = util.insideGroupList(clientNetworkAdaptersInsideList, ClientNetworkAdaptersInside.class);
+        for (List<ClientNetworkAdapters> list :map.values()){
+            myClientNetworkAdapterService.restoreFinal(list);
+        }
+        for (List<ClientNetworkAdaptersInside> list :mapInside.values()){
+            myClientNetworkAdapterInsideService.restoreFinal(list);
         }
         return "success";
     }
