@@ -118,6 +118,18 @@ public class TestController {
     @Resource
     private MyClientHardwareCpuInsideService myClientHardwareCpuInsideService;
     
+    @Resource
+    private PostClientHardwareDisplaycardService postClientHardwareDisplaycardService;
+    
+    @Resource
+    private PostClientHardwareDisplaycardInsideService postClientHardwareDisplaycardInsideService;
+    
+    @Resource
+    private MyClientHardwareDisplaycardService myClientHardwareDisplaycardService;
+    
+    @Resource
+    private MyClientHardwareDisplaycardInsideService myClientHardwareDisplaycardInsideService;
+    
     @GetMapping("/restore")
     public String restore() throws ExecutionException, InterruptedException {
         List<ClientSoftware> clientSoftwareList = postClientSoftService.list();
@@ -243,6 +255,22 @@ public class TestController {
         }
         for (List<ClientHardwareCpuInside> list :mapInside.values()){
             myClientHardwareCpuInsideService.restoreFinal(list);
+        }
+        return "success";
+    }
+    
+    @GetMapping("/restore9")
+    public String restore9() throws ExecutionException, InterruptedException {
+        List<ClientHardwareDisplaycard> clientHardwareDisplaycardList = postClientHardwareDisplaycardService.list();
+        List<ClientHardwareDisplaycard> clientHardwareDisplaycardInsideList = postClientHardwareDisplaycardInsideService.list();
+        ListUtil<ClientHardwareDisplaycard, ClientHardwareDisplaycardInside> util = new ListUtil<>();
+        Map<String,List<ClientHardwareDisplaycard>> map = util.groupList(clientHardwareDisplaycardList);
+        Map<String,List<ClientHardwareDisplaycardInside>> mapInside = util.insideGroupList(clientHardwareDisplaycardInsideList, ClientHardwareDisplaycardInside.class);
+        for (List<ClientHardwareDisplaycard> list :map.values()){
+            myClientHardwareDisplaycardService.restoreFinal(list);
+        }
+        for (List<ClientHardwareDisplaycardInside> list :mapInside.values()){
+            myClientHardwareDisplaycardInsideService.restoreFinal(list);
         }
         return "success";
     }
