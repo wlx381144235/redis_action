@@ -94,6 +94,18 @@ public class TestController {
     @Resource
     private MyClientNetworkAdapterInsideService myClientNetworkAdapterInsideService;
     
+    @Resource
+    private PostClientHardwareChangelogService postClientHardwareChangelogService;
+    
+    @Resource
+    private PostClientHardwareChangelogInsideService postClientHardwareChangelogInsideService;
+    
+    @Resource
+    private MyClientHardwareChangelogService myClientHardwareChangelogService;
+    
+    @Resource
+    private MyClientHardwareChangelogInsideService myClientHardwareChangelogInsideService;
+    
     @GetMapping("/restore")
     public String restore() throws ExecutionException, InterruptedException {
         List<ClientSoftware> clientSoftwareList = postClientSoftService.list();
@@ -186,6 +198,23 @@ public class TestController {
         }
         for (List<ClientNetworkAdaptersInside> list :mapInside.values()){
             myClientNetworkAdapterInsideService.restoreFinal(list);
+        }
+        return "success";
+    }
+    
+    @GetMapping("/restore7")
+    public String restore7() throws ExecutionException, InterruptedException {
+        List<PostClientHardwareChangelog> clientHardwareChangelogList = postClientHardwareChangelogService.list();
+        List<PostClientHardwareChangelog> clientHardwareChangelogInsideList = postClientHardwareChangelogInsideService.list();
+        ListUtil<PostClientHardwareChangelog, ClientHardwareChangelog> util = new ListUtil<>();
+        ListUtil<PostClientHardwareChangelog, ClientHardwareChangelogInside> insideUtil = new ListUtil<>();
+        Map<String,List<ClientHardwareChangelog>> map = util.insideGroupList(clientHardwareChangelogList,ClientHardwareChangelog.class);
+        Map<String,List<ClientHardwareChangelogInside>> mapInside = insideUtil.insideGroupList(clientHardwareChangelogInsideList, ClientHardwareChangelogInside.class);
+        for (List<ClientHardwareChangelog> list :map.values()){
+            myClientHardwareChangelogService.restoreFinal(list);
+        }
+        for (List<ClientHardwareChangelogInside> list :mapInside.values()){
+            myClientHardwareChangelogInsideService.restoreFinal(list);
         }
         return "success";
     }
