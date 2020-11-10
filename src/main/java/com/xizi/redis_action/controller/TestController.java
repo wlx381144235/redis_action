@@ -178,6 +178,18 @@ public class TestController {
     @Resource
     private MyClientHardwareMonitorInsideService myClientHardwareMonitorInsideService;
     
+    @Resource
+    private PostClientHardwareNetadapterService postClientHardwareNetadapterService;
+    
+    @Resource
+    private PostClientHardwareNetadapterInsideService postClientHardwareNetadapterInsideService;
+    
+    @Resource
+    private MyClientHardwareNetadapterService myClientHardwareNetadapterService;
+    
+    @Resource
+    private MyClientHardwareNetadapterInsideService myClientHardwareNetadapterInsideService;
+    
     
     @GetMapping("/restore")
     public String restore() throws ExecutionException, InterruptedException {
@@ -384,6 +396,22 @@ public class TestController {
         }
         for (List<ClientHardwareMonitorInside> list :mapInside.values()){
             myClientHardwareMonitorInsideService.restoreFinal(list);
+        }
+        return "success";
+    }
+    
+    @GetMapping("/restore14")
+    public String restore14() throws ExecutionException, InterruptedException {
+        List<ClientHardwareNetadapter> clientHardwareNetadapterList = postClientHardwareNetadapterService.list();
+        List<ClientHardwareNetadapter> clientHardwareNetadapterInsideList = postClientHardwareNetadapterInsideService.list();
+        ListUtil<ClientHardwareNetadapter, ClientHardwareNetadapterInside> util = new ListUtil<>();
+        Map<String,List<ClientHardwareNetadapter>> map = util.groupList(clientHardwareNetadapterList);
+        Map<String,List<ClientHardwareNetadapterInside>> mapInside = util.insideGroupList(clientHardwareNetadapterInsideList, ClientHardwareNetadapterInside.class);
+        for (List<ClientHardwareNetadapter> list :map.values()){
+            myClientHardwareNetadapterService.restoreFinal(list);
+        }
+        for (List<ClientHardwareNetadapterInside> list :mapInside.values()){
+            myClientHardwareNetadapterInsideService.restoreFinal(list);
         }
         return "success";
     }
