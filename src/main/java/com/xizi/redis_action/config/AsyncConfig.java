@@ -22,7 +22,7 @@ public class AsyncConfig {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setMaxPoolSize(MAX_POOL_SIZE);
         taskExecutor.setCorePoolSize(CORE_POOL_SIZE);
-        taskExecutor.setThreadNamePrefix("async-task-thread-pool");
+        taskExecutor.setThreadNamePrefix("restore-pool");
         taskExecutor.initialize();
         return taskExecutor;
     }

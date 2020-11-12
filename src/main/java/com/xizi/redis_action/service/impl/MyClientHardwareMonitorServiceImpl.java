@@ -7,6 +7,7 @@ import com.xizi.redis_action.service.MyClientHardwareMonitorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +22,14 @@ public class MyClientHardwareMonitorServiceImpl extends ServiceImpl<MysqlClientH
     
     @Override
     @Async("taskExecutor")
+    @Transactional
     public void restoreFinal(List<ClientHardwareMonitor> list) {
-        this.saveOrUpdateBatch(list);
+        log.info("task for ClientHardwareMonitor start");
+        try {
+            this.saveOrUpdateBatch(list);
+            log.info("task for ClientHardwareMonitor end");
+        } catch (Exception e) {
+            log.error("ERROR!! msg info:{}",e);
+        }
     }
 }

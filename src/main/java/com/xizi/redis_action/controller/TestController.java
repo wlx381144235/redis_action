@@ -471,4 +471,25 @@ public class TestController {
         }
         return "success";
     }
+    
+    @GetMapping("/final")
+    public String finalRestore() throws ExecutionException, InterruptedException {
+        restore();
+        restore2();
+        restore3();
+        restore4();
+        restore5();
+        restore6();
+        restore7();
+        restore8();
+        restore9();
+        restore10();
+        restore11();
+        restore12();
+        restore13();
+        restore14();
+        restore15();
+        restore16();
+        return "success";
+    }
 }

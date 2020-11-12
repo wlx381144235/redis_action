@@ -7,6 +7,7 @@ import com.xizi.redis_action.service.MyClientHardwareNetadapterInsideService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +22,14 @@ public class MyClientHardwareNetadapterInsideServiceImpl extends ServiceImpl<Mys
     
     @Override
     @Async("taskExecutor")
+    @Transactional
     public void restoreFinal(List<ClientHardwareNetadapterInside> list) {
-        this.saveOrUpdateBatch(list);
+        log.info("task for ClientHardwareNetadapterInside start");
+        try {
+            this.saveOrUpdateBatch(list);
+            log.info("task for ClientHardwareNetadapterInside end");
+        } catch (Exception e) {
+            log.error("ERROR!! msg info:{}",e);
+        }
     }
 }

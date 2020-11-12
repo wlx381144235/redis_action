@@ -7,6 +7,7 @@ import com.xizi.redis_action.service.MyClientHardwareSoundcardInsideService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +22,14 @@ public class MyClientHardwareSoundcardInsideServiceImpl extends ServiceImpl<Mysq
     
     @Override
     @Async("taskExecutor")
+    @Transactional
     public void restoreFinal(List<ClientHardwareSoundcardInside> list) {
-        this.saveOrUpdateBatch(list);
+        log.info("task for ClientHardwareSoundcardInside start");
+        try {
+            this.saveOrUpdateBatch(list);
+            log.info("task for ClientHardwareSoundcardInside end");
+        } catch (Exception e) {
+            log.error("ERROR!! msg info:{}",e);
+        }
     }
 }

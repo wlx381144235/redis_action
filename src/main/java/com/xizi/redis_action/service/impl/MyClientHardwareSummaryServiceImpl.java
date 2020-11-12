@@ -7,6 +7,7 @@ import com.xizi.redis_action.service.MyClientHardwareSummaryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +22,14 @@ public class MyClientHardwareSummaryServiceImpl extends ServiceImpl<MysqlClientH
     
     @Override
     @Async("taskExecutor")
+    @Transactional
     public void restoreFinal(List<ClientHardwareSummary> list) {
-        this.saveOrUpdateBatch(list);
+        log.info("task for ClientHardwareSummary start");
+        try {
+            this.saveOrUpdateBatch(list);
+            log.info("task for ClientHardwareSummary end");
+        } catch (Exception e) {
+            log.error("ERROR!! msg info:{}",e);
+        }
     }
 }

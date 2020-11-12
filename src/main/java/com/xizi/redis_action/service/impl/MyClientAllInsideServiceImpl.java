@@ -10,6 +10,7 @@ import com.xizi.redis_action.service.MyClientInsideService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,7 +25,14 @@ public class MyClientAllInsideServiceImpl extends ServiceImpl<MysqlClientAllInsi
     
     @Override
     @Async("taskExecutor")
+    @Transactional
     public void restoreFinal(List<ClientAllInside> list) {
-        this.saveOrUpdateBatch(list);
+        log.info("task for ClientAllInside start");
+        try {
+            this.saveOrUpdateBatch(list);
+            log.info("task for ClientAllInside end");
+        } catch (Exception e) {
+            log.error("ERROR!! msg info:{}",e);
+        }
     }
 }

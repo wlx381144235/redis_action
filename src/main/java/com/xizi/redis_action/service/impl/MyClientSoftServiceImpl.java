@@ -7,6 +7,8 @@ import com.xizi.redis_action.service.MyClientSoftService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 /**
@@ -20,7 +22,14 @@ public class MyClientSoftServiceImpl extends ServiceImpl<MysqlClientSoftMapper, 
     
     @Override
     @Async("taskExecutor")
+    @Transactional
     public void restoreFinal(List<ClientSoftware> list) {
-        this.saveOrUpdateBatch(list);
+        log.info("task for ClientSoftware start");
+        try {
+            this.saveOrUpdateBatch(list);
+            log.info("task for ClientSoftware end");
+        } catch (Exception e) {
+            log.error("ERROR!! msg info:{}",e);
+        }
     }
 }
